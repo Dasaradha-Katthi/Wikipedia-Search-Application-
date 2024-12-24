@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+
+
+<style>
+
+
+.main-container {
+    font-family: "Roboto";
+}
+
+.wiki-search-header {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #d5cdcd;
+    padding-top: 30px;
+    padding-right: 20px;
+    padding-bottom: 30px;
+    padding-left: 20px;
+    margin-bottom: 40px;
+}
+
+.wiki-logo {
+    width: 150px;
+    margin-bottom: 30px;
+}
+
+.search-input {
+    font-size: 18px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #d5cdcd;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.search-results {
+    width: 100%;
+    padding-left: 20px;
+}
+
+.result-item {
+    margin-bottom: 20px;
+}
+
+.result-title {
+    font-size: 22px;
+}
+
+.link-description {
+    color: #444444;
+    font-size: 15px;
+}
+
+.result-url {
+    color: #006621;
+    text-decoration: none;
+}
+
+
+
+</style>
+
+
+
+
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="wiki-search-header text-center">
+            <img class="wiki-logo" src="https://d1tgh8fmlzexmh.cloudfront.net/ccbp-dynamic-webapps/wiki-logo-img.png" />
+            <br />
+            <input placeholder="Type a keyword and press Enter to search" type="search" class="search-input w-100" id="searchInput" />
+        </div>
+        <div class="d-none" id="spinner">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                </div>
+            </div>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+    </div>
+
+  <script>
+
+   let searchInputEl = document.getElementById('searchInput');
+let searchResultsContainer = document.getElementById('searchResults');
+let spinnerEl = document.getElementById('spinner');
+
+function createAndAppendsearchresult(result) {
+
+    let resultItemDivElemenet = document.createElement("div");
+    resultItemDivElemenet.classList.add("result-item");
+    searchResultsContainer.appendChild(resultItemDivElemenet);
+
+  
+
+    let {
+        description,
+        link,
+        title
+    } = result;
+    let titleAnchorEl = document.createElement('a');
+    titleAnchorEl.classList.add("result-title");
+    titleAnchorEl.href = link;
+    titleAnchorEl.target = "_blank";
+    titleAnchorEl.textContent = title;
+    searchResultsContainer.appendChild(titleAnchorEl);
+    // create break element 
+
+    let titleBreakEl = document.createElement('br');
+    searchResultsContainer.appendChild(titleBreakEl);
+
+    // create url element
+    let urlAnchorEl = document.createElement('a');
+    urlAnchorEl.classList.add("result-url");
+    urlAnchorEl.href = link;
+    urlAnchorEl.target = "_blank";
+    urlAnchorEl.textContent = link;
+    searchResultsContainer.appendChild(urlAnchorEl);
+
+
+    // create break element     
+    let urlBreakEl = document.createElement('br');
+    searchResultsContainer.appendChild(urlBreakEl);
+
+
+    // create description element
+
+    let desParaEl = document.createElement('p');
+    desParaEl.classList.add('link-description');
+    searchResultsContainer.appendChild(desParaEl);
+    desParaEl.textContent = description;
+
+
+
+}
+
+
+
+function displaysearchresults(searchresults) {
+    for (let result of searchresults) {
+        createAndAppendsearchresult(result);
+    }
+}
+
+function searchingwikipidea(event) {
+    if (event.key === "Enter") {
+        searchResultsContainer.textContent = "";
+        spinnerEl.classList.toggle('d-none');
+        let searchInputValue = searchInputEl.value;
+        let url = "https://apis.ccbp.in/wiki-search?search=" + searchInputValue;
+        let options = {
+            method: "GET"
+        };
+        fetch(url, options)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(jsonData) {
+                spinnerEl.classList.toggle('d-none');
+                console.log(jsonData);
+                let {
+                    search_results
+                } = jsonData;
+                displaysearchresults(search_results);
+            });
+
+    }
+
+}
+
+
+searchInputEl.addEventListener("keydown", searchingwikipidea);
+
+
+
+</script>
+
+
+
+
+
+
+</body>
+
+
+
+
+</html>
